@@ -33,7 +33,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 lib_LTLIBRARIES = libthrift.la
 pkgconfig_DATA = thrift.pc
 libthrift_la_LDFLAGS = -release $(VERSION)
-libthrift_la_LIBADD = $(BOOST_LDFLAGS) $(OPENSSL_LDFLAGS) $(OPENSSL_LIBS)
+libthrift_la_LIBADD = $(BOOST_LDFLAGS) $(OPENSSL_LDFLAGS) $(OPENSSL_LIBS) -lprofiler
 
 ## We only build the extra libraries if we have the dependencies,
 ## but we install all of the headers unconditionally.

@@ -29,12 +29,19 @@ namespace apache {
 namespace thrift {
 namespace protocol {
 
+class ProtocolListener {
+  public:
+    virtual void on_start(const char* msg) = 0;
+    virtual void on_end() = 0;
+};
+
 /**
  * C++ Implementation of the Compact Protocol as described in THRIFT-110
  */
 template <class Transport_>
 class TCompactProtocolT : public TVirtualProtocol<TCompactProtocolT<Transport_> > {
 public:
+
   static const int8_t PROTOCOL_ID = (int8_t)0x82u;
   static const int8_t VERSION_N = 1;
   static const int8_t VERSION_MASK = 0x1f;       // 0001 1111
@@ -81,21 +88,24 @@ public:
       string_limit_(0),
       string_buf_(nullptr),
       string_buf_size_(0),
-      container_limit_(0) {
+      container_limit_(0),
+      protocol_listener_(nullptr) {
     booleanField_.name = nullptr;
     boolValue_.hasBoolValue = false;
   }
 
   TCompactProtocolT(std::shared_ptr<Transport_> trans,
                     int32_t string_limit,
-                    int32_t container_limit)
+                    int32_t container_limit,
+                    ProtocolListener* listener)
     : TVirtualProtocol<TCompactProtocolT<Transport_> >(trans),
       trans_(trans.get()),
       lastFieldId_(0),
       string_limit_(string_limit),
       string_buf_(nullptr),
       string_buf_size_(0),
-      container_limit_(container_limit) {
+      container_limit_(container_limit),
+      protocol_listener_(listener) {
     booleanField_.name = nullptr;
     boolValue_.hasBoolValue = false;
   }
@@ -218,6 +228,7 @@ protected:
   uint8_t* string_buf_;
   int32_t string_buf_size_;
   int32_t container_limit_;
+  ProtocolListener* protocol_listener_;
 };
 
 typedef TCompactProtocolT<TTransport> TCompactProtocol;
@@ -239,13 +250,14 @@ public:
 
   void setContainerSizeLimit(int32_t container_limit) { container_limit_ = container_limit; }
 
-  std::shared_ptr<TProtocol> getProtocol(std::shared_ptr<TTransport> trans) override {
+  std::shared_ptr<TProtocol> getProtocol(std::shared_ptr<TTransport> trans, 
+      ProtocolListener* protocol_listener = nullptr) override {
     std::shared_ptr<Transport_> specific_trans = std::dynamic_pointer_cast<Transport_>(trans);
     TProtocol* prot;
     if (specific_trans) {
-      prot = new TCompactProtocolT<Transport_>(specific_trans, string_limit_, container_limit_);
+      prot = new TCompactProtocolT<Transport_>(specific_trans, string_limit_, container_limit_, protocol_listener);
     } else {
-      prot = new TCompactProtocol(trans, string_limit_, container_limit_);
+      prot = new TCompactProtocol(trans, string_limit_, container_limit_, protocol_listener);
     }
 
     return std::shared_ptr<TProtocol>(prot);
@@ -254,6 +266,7 @@ public:
 private:
   int32_t string_limit_;
   int32_t container_limit_;
+  ProtocolListener* protocol_listener_;
 };
 
 typedef TCompactProtocolFactoryT<TTransport> TCompactProtocolFactory;
