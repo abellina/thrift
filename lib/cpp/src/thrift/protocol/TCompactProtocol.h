@@ -255,7 +255,7 @@ public:
   }
 
   std::shared_ptr<TProtocol> getProtocol(std::shared_ptr<TTransport> trans, 
-      ProtocolListener* protocol_listener = nullptr) {
+      ProtocolListener* protocol_listener) {
     std::shared_ptr<Transport_> specific_trans = std::dynamic_pointer_cast<Transport_>(trans);
     TProtocol* prot;
     if (specific_trans) {
