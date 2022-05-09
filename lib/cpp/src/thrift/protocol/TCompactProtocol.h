@@ -250,6 +250,10 @@ public:
 
   void setContainerSizeLimit(int32_t container_limit) { container_limit_ = container_limit; }
 
+  std::shared_ptr<TProtocol> getProtocol(std::shared_ptr<TTransport> trans) {
+    return getProtocol(trans, nullptr);
+  }
+
   std::shared_ptr<TProtocol> getProtocol(std::shared_ptr<TTransport> trans, 
       ProtocolListener* protocol_listener = nullptr) override {
     std::shared_ptr<Transport_> specific_trans = std::dynamic_pointer_cast<Transport_>(trans);
