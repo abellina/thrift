@@ -436,7 +436,7 @@ uint32_t TCompactProtocolT<Transport_>::readMessageBegin(
     std::string& name,
     TMessageType& messageType,
     int32_t& seqid) {
-  profile_this(protocol_listener_, "readMessageBegin");
+  profile_this(protocol_listener_, (std::string("readMessageBegin_")+name).c_str());
   uint32_t rsize = 0;
   int8_t protocolId;
   int8_t versionAndType;
@@ -466,7 +466,7 @@ uint32_t TCompactProtocolT<Transport_>::readMessageBegin(
  */
 template <class Transport_>
 uint32_t TCompactProtocolT<Transport_>::readStructBegin(std::string& name) {
-  profile_this(protocol_listener_, "readStructBegin");
+  profile_this(protocol_listener_, (std::string("readStructBegin_") + name).c_str());
   name = "";
   lastField_.push(lastFieldId_);
   lastFieldId_ = 0;
@@ -492,7 +492,7 @@ template <class Transport_>
 uint32_t TCompactProtocolT<Transport_>::readFieldBegin(std::string& name,
                                                        TType& fieldType,
                                                        int16_t& fieldId) {
-  profile_this(protocol_listener_, "readFieldBegin");
+  //profile_this(protocol_listener_, "readFieldBegin");
   (void) name;
   uint32_t rsize = 0;
   int8_t byte;
@@ -700,7 +700,7 @@ uint32_t TCompactProtocolT<Transport_>::readString(std::string& str) {
  */
 template <class Transport_>
 uint32_t TCompactProtocolT<Transport_>::readBinary(std::string& str) {
-  profile_this(protocol_listener_, "readBinary");
+  //profile_this(protocol_listener_, "readBinary");
   int32_t rsize = 0;
   int32_t size;
 
